@@ -64,11 +64,17 @@ body {
 .content {
     flex: 1;
     padding: 24px 32px;
+    min-width: 0;
 }
 
 .hidden {
     display: none !important;
 }
+
+
+/* =========================================================
+   LOAD DATA BUTTON
+========================================================= */
 
 #load-data-btn {
     background-color: #1f3a5f;
@@ -84,10 +90,20 @@ body {
     background-color: #26466f;
 }
 
+
+/* =========================================================
+   LOADING
+========================================================= */
+
 #loading-spinner {
     margin-top: 10px;
     color: #555;
 }
+
+
+/* =========================================================
+   ERROR
+========================================================= */
 
 .error {
     margin-top: 12px;
@@ -96,6 +112,11 @@ body {
     padding: 10px 14px;
     border-radius: 4px;
 }
+
+
+/* =========================================================
+   SUMMARY TABLE
+========================================================= */
 
 .summary-table {
     margin-top: 10px;
@@ -106,6 +127,11 @@ body {
     padding: 6px 12px;
     border: 1px solid #ccc;
 }
+
+
+/* =========================================================
+   NORMAL DATA TABLE
+========================================================= */
 
 .table-wrapper {
     overflow-x: auto;
@@ -135,38 +161,19 @@ body {
     top: 0;
 }
 
-.chart-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 10px;
-}
-
-.chart-card {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 8px;
-}
-
-.chart-card img {
-    max-width: 400px;
-    display: block;
-}
-
 
 /* =========================================================
-   COLUMN INFORMATION ONLY
-   Existing colours are NOT changed
-   ========================================================= */
+   COLUMN INFORMATION
+   SMALLER TABLE
+========================================================= */
 
 .column-info-wrapper {
     width: 500px;
     max-width: 100%;
     overflow-x: auto;
-    overflow-y: auto;
     margin-top: 10px;
     max-height: 400px;
+    overflow-y: auto;
     border: 1px solid #ddd;
 }
 
@@ -203,4 +210,109 @@ body {
 .column-info-table th:nth-child(3),
 .column-info-table td:nth-child(3) {
     width: 180px;
+}
+
+
+/* =========================================================
+   EDA GRAPHS
+   ONE GRAPH PER ROW
+   SLIGHTLY SMALLER
+========================================================= */
+
+.chart-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 10px;
+    width: 95%;
+}
+
+.chart-card {
+    width: 100%;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.chart-card img {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    display: block;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .sidebar {
+        width: 200px;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .column-info-wrapper {
+        width: 100%;
+    }
+
+    .column-info-table {
+        width: 500px;
+    }
+
+    .chart-grid {
+        width: 95%;
+    }
+
+    .chart-card {
+        width: 100%;
+    }
+
+    .chart-card img {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .content {
+        padding: 15px;
+    }
+
+    .column-info-wrapper {
+        width: 100%;
+    }
+
+    .column-info-table {
+        width: 500px;
+    }
+
+    .chart-grid {
+        width: 100%;
+        gap: 15px;
+    }
+
+    .chart-card {
+        width: 100%;
+    }
+
+    .chart-card img {
+        width: 100%;
+        max-width: none;
+    }
 }
