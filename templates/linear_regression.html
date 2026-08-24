@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Linear Regression</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     TOP BAR
+     ========================================================= -->
+
+<header class="topbar">
+
+    <h1>Placement Prediction Project</h1>
+
+</header>
+
+
+<div class="layout">
+
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <nav class="sidebar">
+
+        <ul>
+
+
+            <!-- DATA LOADING -->
+
+            <li>
+
+                <a href="{{ url_for('data_loading') }}"
+                   class="menu-item">
+
+                    Data Loading
+
+                </a>
+
+            </li>
+
+
+            <!-- EDA -->
+
+            <li>
+
+                <a href="{{ url_for('eda') }}"
+                   class="menu-item">
+
+                    EDA
+
+                </a>
+
+            </li>
+
+
+            <!-- PREPROCESSING -->
+
+            <li>
+
+                <a href="{{ url_for('preprocessing') }}"
+                   class="menu-item">
+
+                    Preprocessing
+
+                </a>
+
+            </li>
+
+
+            <!-- LINEAR REGRESSION -->
+
+            <li>
+
+                <a href="{{ url_for('linear_regression') }}"
+                   class="menu-item active">
+
+                    Linear Regression
+
+                </a>
+
+            </li>
+
+
+            <!-- COMING SOON -->
+
+            <li class="menu-item disabled">
+
+                Model Training (coming soon)
+
+            </li>
+
+
+            <li class="menu-item disabled">
+
+                Prediction (coming soon)
+
+            </li>
+
+
+        </ul>
+
+    </nav>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <main class="content">
+
+
+        <h2>Linear Regression</h2>
+
+
+        {% if error %}
+
+            <div class="error">
+
+                {{ error }}
+
+            </div>
+
+        {% endif %}
+
+
+        {% if results %}
+
+
+            <!-- =================================================
+                 MODEL INFORMATION
+                 ================================================= -->
+
+            <h3>Model Information</h3>
+
+
+            <table class="summary-table">
+
+
+                <tr>
+
+                    <td>
+                        Algorithm
+                    </td>
+
+                    <td>
+                        Linear Regression
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Target
+                    </td>
+
+                    <td>
+                        {{ results.target }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Training Rows
+                    </td>
+
+                    <td>
+                        {{ results.training_rows }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Testing Rows
+                    </td>
+
+                    <td>
+                        {{ results.testing_rows }}
+                    </td>
+
+                </tr>
+
+
+            </table>
+
+
+            <!-- =================================================
+                 FEATURES
+                 ================================================= -->
+
+            <h3>Features Used</h3>
+
+
+            <div class="table-wrapper">
+
+
+                <table class="data-table">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Feature
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                    {% for feature in results.features %}
+
+                        <tr>
+
+                            <td>
+                                {{ loop.index }}
+                            </td>
+
+                            <td>
+                                {{ feature }}
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 MODEL PERFORMANCE
+                 ================================================= -->
+
+            <h3>Model Performance</h3>
+
+
+            <table class="summary-table">
+
+
+                <tr>
+
+                    <td>
+                        Mean Squared Error
+                    </td>
+
+                    <td>
+                        {{ "%.4f"|format(results.mse) }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Root Mean Squared Error
+                    </td>
+
+                    <td>
+                        {{ "%.4f"|format(results.rmse) }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        R² Score
+                    </td>
+
+                    <td>
+                        {{ "%.4f"|format(results.r2) }}
+                    </td>
+
+                </tr>
+
+
+            </table>
+
+
+            <!-- =================================================
+                 ACTUAL VS PREDICTED
+                 ================================================= -->
+
+            <h3>Actual vs Predicted Salary Package</h3>
+
+
+            <div class="chart-card">
+
+
+                <img
+                    src="{{ url_for(
+                        'static',
+                        filename=results.graph
+                    ) }}"
+                    alt="Actual vs Predicted Salary Package"
+                    style="max-width: 100%; height: auto;"
+                >
+
+
+            </div>
+
+
+        {% endif %}
+
+
+    </main>
+
+
+</div>
+
+
+</body>
+
+</html>
