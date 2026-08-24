@@ -17,11 +17,17 @@
 
 <body>
 
+
+<!-- ==================================================
+     TOP BAR
+================================================== -->
+
 <header class="topbar">
 
     <h1>Placement Prediction Project</h1>
 
 </header>
+
 
 
 <div class="layout">
@@ -35,6 +41,9 @@
 
         <ul>
 
+
+            <!-- DATA LOADING -->
+
             <li>
 
                 <a
@@ -44,11 +53,16 @@
                     active
                     {% endif %}"
                 >
+
                     Data Loading
+
                 </a>
 
             </li>
 
+
+
+            <!-- EDA -->
 
             <li>
 
@@ -59,11 +73,16 @@
                     active
                     {% endif %}"
                 >
+
                     EDA
+
                 </a>
 
             </li>
 
+
+
+            <!-- PREPROCESSING -->
 
             <li>
 
@@ -74,34 +93,36 @@
                     active
                     {% endif %}"
                 >
+
                     Preprocessing
+
                 </a>
 
             </li>
 
+
+
             <!-- LINEAR REGRESSION -->
 
-<li>
+            <li>
 
-    <a href="{{ url_for('linear_regression') }}"
-       class="menu-item
-       {% if active == 'linear-regression' %}active{% endif %}">
+                <a
+                    href="{{ url_for('linear_regression') }}"
+                    class="menu-item
+                    {% if active == 'linear-regression' %}
+                    active
+                    {% endif %}"
+                >
 
-        Linear Regression
+                    Linear Regression
 
-    </a>
+                </a>
 
-</li>
+            </li>
 
 
-<!-- COMING SOON -->
 
-<li class="menu-item disabled">
-
-    Model Training (coming soon)
-
-</li>
-
+            <!-- MODEL TRAINING -->
 
             <li>
 
@@ -116,6 +137,8 @@
 
 
 
+            <!-- PREDICTION -->
+
             <li>
 
                 <span class="menu-item disabled">
@@ -127,9 +150,11 @@
 
             </li>
 
+
         </ul>
 
     </nav>
+
 
 
     <!-- ==================================================
@@ -138,6 +163,10 @@
 
     <main class="content">
 
+
+        <!-- ==================================================
+             HOME PAGE
+        =================================================== -->
 
         {% if active == 'none' %}
 
@@ -153,14 +182,19 @@
         {% endif %}
 
 
+
         <!-- ==================================================
              DATA LOADING
         =================================================== -->
 
         {% if active == 'data-loading' %}
 
+
             <h2>Data Loading</h2>
 
+
+
+            <!-- ERROR -->
 
             {% if error %}
 
@@ -173,13 +207,22 @@
             {% endif %}
 
 
+
             {% if summary %}
+
+
+                <!-- ==================================================
+                     DATASET SUMMARY
+                ================================================== -->
 
                 <table class="summary-table">
 
+
                     <tr>
 
-                        <td>Rows</td>
+                        <td>
+                            Rows
+                        </td>
 
                         <td>
                             {{ summary.n_rows }}
@@ -187,9 +230,12 @@
 
                     </tr>
 
+
                     <tr>
 
-                        <td>Columns</td>
+                        <td>
+                            Columns
+                        </td>
 
                         <td>
                             {{ summary.n_cols }}
@@ -197,25 +243,40 @@
 
                     </tr>
 
+
                 </table>
 
+
+
+                <!-- ==================================================
+                     COLUMN INFORMATION
+                     ONLY THIS TABLE HAS A DIFFERENT CLASS
+                ================================================== -->
 
                 <h3>Column Information</h3>
 
 
-                <div class="table-wrapper">
+                <div class="column-info-wrapper">
 
-                    <table class="data-table">
+
+                    <table class="column-info-table">
+
 
                         <thead>
 
                             <tr>
 
-                                <th>Column</th>
+                                <th>
+                                    Column
+                                </th>
 
-                                <th>Dtype</th>
+                                <th>
+                                    Dtype
+                                </th>
 
-                                <th>Missing Values</th>
+                                <th>
+                                    Missing Values
+                                </th>
 
                             </tr>
 
@@ -224,7 +285,9 @@
 
                         <tbody>
 
+
                         {% for col in summary.columns %}
+
 
                             <tr>
 
@@ -232,9 +295,11 @@
                                     {{ col }}
                                 </td>
 
+
                                 <td>
                                     {{ summary.dtypes[col] }}
                                 </td>
+
 
                                 <td>
                                     {{ summary.missing_counts[col] }}
@@ -242,70 +307,106 @@
 
                             </tr>
 
+
                         {% endfor %}
+
 
                         </tbody>
 
+
                     </table>
+
 
                 </div>
 
+
+
+                <!-- ==================================================
+                     DATASET PREVIEW
+                     ORIGINAL TABLE CLASS - UNCHANGED
+                ================================================== -->
 
                 <h3>Dataset Preview</h3>
 
 
                 <div class="table-wrapper">
 
+
                     <table class="data-table">
+
 
                         <thead>
 
                             <tr>
 
+
                             {% for col in summary.columns %}
 
+
                                 <th>
+
                                     {{ col }}
+
                                 </th>
 
+
                             {% endfor %}
+
 
                             </tr>
 
                         </thead>
 
 
+
                         <tbody>
+
 
                         {% for row in summary.preview %}
 
+
                             <tr>
+
 
                             {% for col in summary.columns %}
 
+
                                 <td>
+
                                     {{ row[col] }}
+
                                 </td>
+
 
                             {% endfor %}
 
+
                             </tr>
+
 
                         {% endfor %}
 
+
                         </tbody>
+
 
                     </table>
 
+
                 </div>
+
 
             {% endif %}
 
+
         {% endif %}
+
 
     </main>
 
+
 </div>
+
 
 </body>
 
