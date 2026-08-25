@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<title>Placement Prediction Project</title>
+    <title>EDA - Placement Prediction</title>
 
-<link rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 
 </head>
 
@@ -28,101 +28,119 @@
 <div class="layout">
 
 
-    <!-- =====================================================
+    <!-- ==================================================
          SIDEBAR
-         ===================================================== -->
+    ================================================== -->
 
     <nav class="sidebar">
 
         <ul>
 
-
-            <!-- DATA LOADING -->
-
             <li>
 
-                <a href="{{ url_for('data_loading') }}"
-                   class="menu-item
-                   {% if active == 'data-loading' %}active{% endif %}">
-
+                <a
+                    href="{{ url_for('data_loading') }}"
+                    class="menu-item
+                    {% if active == 'data-loading' %}
+                    active
+                    {% endif %}"
+                >
                     Data Loading
-
                 </a>
 
             </li>
 
 
-            <!-- EDA -->
-
             <li>
 
-                <a href="{{ url_for('eda') }}"
-                   class="menu-item
-                   {% if active == 'eda' %}active{% endif %}">
-
+                <a
+                    href="{{ url_for('eda') }}"
+                    class="menu-item
+                    {% if active == 'eda' %}
+                    active
+                    {% endif %}"
+                >
                     EDA
-
                 </a>
 
             </li>
 
 
-            <!-- PREPROCESSING -->
-
             <li>
 
-                <a href="{{ url_for('preprocessing') }}"
-                   class="menu-item
-                   {% if active == 'preprocessing' %}active{% endif %}">
-
+                <a
+                    href="{{ url_for('preprocessing') }}"
+                    class="menu-item
+                    {% if active == 'preprocessing' %}
+                    active
+                    {% endif %}"
+                >
                     Preprocessing
-
                 </a>
 
             </li>
 
+
             <li>
 
-    <a href="{{ url_for('linear_regression') }}"
-       class="menu-item
-       {% if active == 'linear-regression' %}active{% endif %}">
-
-        Linear Regression
-
-    </a>
-
-</li>
-
-
-            <!-- KEEP AS COMING SOON -->
-
-            <li class="menu-item disabled">
-
-                Model Training (coming soon)
+                <a
+                    href="{{ url_for('linear_regression') }}"
+                    class="menu-item
+                    {% if active == 'linear-regression' %}
+                    active
+                    {% endif %}"
+                >
+                    Linear Regression
+                </a>
 
             </li>
 
 
-            <li class="menu-item disabled">
+            <li>
 
-                Prediction (coming soon)
+                <span class="menu-item disabled">
+
+                    Model Training
+                    (coming soon)
+
+                </span>
 
             </li>
 
+
+            <li>
+
+                <span class="menu-item disabled">
+
+                    Prediction
+                    (coming soon)
+
+                </span>
+
+            </li>
 
         </ul>
 
     </nav>
 
 
-    <!-- =====================================================
+
+    <!-- ==================================================
          MAIN CONTENT
-         ===================================================== -->
+    ================================================== -->
 
     <main class="content">
 
 
         <h2>Exploratory Data Analysis</h2>
+
+
+        <p>
+
+            Visual analysis of the placement prediction dataset.
+
+        </p>
+
 
 
         {% if error %}
@@ -140,161 +158,102 @@
         {% if results %}
 
 
-            <table class="summary-table">
+            <!-- ==================================================
+                 DATASET SUMMARY
+            ================================================== -->
 
+            {% if results.summary %}
 
-                <tr>
+                <h3>Dataset Summary</h3>
 
-                    <td>Rows</td>
-
-                    <td>
-                        {{ results.n_rows }}
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>Columns</td>
-
-                    <td>
-                        {{ results.n_cols }}
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>Duplicate rows</td>
-
-                    <td>
-                        {{ results.duplicate_count }}
-                    </td>
-
-                </tr>
-
-
-            </table>
-
-
-
-            {% if results.missing %}
-
-
-                <h3>Missing Values</h3>
-
-
-                <div class="table-wrapper">
-
-                    <table class="data-table">
-
-
-                        <thead>
-
-                            <tr>
-
-                                <th>Column</th>
-
-                                <th>Missing Count</th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody>
-
-
-                        {% for col, count in results.missing.items() %}
-
-
-                            <tr>
-
-                                <td>
-                                    {{ col }}
-                                </td>
-
-                                <td>
-                                    {{ count }}
-                                </td>
-
-                            </tr>
-
-
-                        {% endfor %}
-
-
-                        </tbody>
-
-
-                    </table>
-
-                </div>
-
-
-            {% endif %}
-
-
-
-            <h3>Placement Status Counts</h3>
-
-
-            <table class="summary-table">
-
-
-                {% for status, count in results.target_counts.items() %}
-
+                <table class="summary-table">
 
                     <tr>
 
                         <td>
-                            {{ status }}
+                            Rows
                         </td>
 
                         <td>
-                            {{ count }}
+                            {{ results.summary.n_rows }}
                         </td>
 
                     </tr>
 
 
-                {% endfor %}
+                    <tr>
+
+                        <td>
+                            Columns
+                        </td>
+
+                        <td>
+                            {{ results.summary.n_cols }}
+                        </td>
+
+                    </tr>
+
+                </table>
+
+            {% endif %}
 
 
-            </table>
+
+            <!-- ==================================================
+                 EDA GRAPHS
+                 ONE GRAPH PER ROW
+            ================================================== -->
+
+            {% if results.charts %}
+
+                <h3>EDA Visualizations</h3>
+
+                <div class="chart-grid">
 
 
-
-            <h3>Charts</h3>
-
-
-            <div class="chart-grid">
+                    {% for fname in results.charts %}
 
 
-                {% for fname in results.charts %}
+                        <div class="chart-card">
 
 
-                    <div class="chart-card">
+                            {% if 'heatmap' in fname.lower() %}
 
 
-                        <img
-                            src="{{ url_for(
-                                'static',
-                                filename='charts/' + fname
-                            ) }}"
-                            alt="{{ fname }}"
-                        >
+                                <img
+                                    class="heatmap"
+                                    src="{{ url_for(
+                                        'static',
+                                        filename='charts/' + fname
+                                    ) }}"
+                                    alt="Correlation Heatmap"
+                                >
 
 
-                    </div>
+                            {% else %}
 
 
-                {% endfor %}
+                                <img
+                                    src="{{ url_for(
+                                        'static',
+                                        filename='charts/' + fname
+                                    ) }}"
+                                    alt="{{ fname }}"
+                                >
 
 
-            </div>
+                            {% endif %}
+
+
+                        </div>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+            {% endif %}
 
 
         {% endif %}
