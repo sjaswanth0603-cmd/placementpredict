@@ -2,12 +2,11 @@ import pandas as pd
 
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.metrics import accuracy_score, confusion_matrix
 
 
 def load_data(filename):
-
     data = pd.read_csv(filename)
 
     features = [
@@ -18,24 +17,17 @@ def load_data(filename):
     ]
 
     X = data[features]
-
     y = data["PlacementStatus"]
 
-    # Remove missing values
-    data = pd.concat(
-        [X, y],
-        axis=1
-    ).dropna()
+    data = pd.concat([X, y], axis=1).dropna()
 
     X = data[features]
-
     y = data["PlacementStatus"]
 
     return X, y
 
 
 def split_data(X, y):
-
     return train_test_split(
         X,
         y,
@@ -50,41 +42,22 @@ def train_and_evaluate(
     y_train,
     X_test,
     y_test,
-    name
+    name,
+    scaler
 ):
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
 
-    # Scaling
-    scaler = StandardScaler()
+    model = LogisticRegression(max_iter=1000)
 
-    X_train_scaled = scaler.fit_transform(
-        X_train
-    )
-
-    X_test_scaled = scaler.transform(
-        X_test
-    )
-
-    # Create Logistic Regression model
-    model = LogisticRegression(
-        max_iter=1000
-    )
-
-    # Train
     model.fit(
         X_train_scaled,
         y_train
     )
 
-    # Predictions
-    train_pred = model.predict(
-        X_train_scaled
-    )
+    train_pred = model.predict(X_train_scaled)
+    test_pred = model.predict(X_test_scaled)
 
-    test_pred = model.predict(
-        X_test_scaled
-    )
-
-    # Accuracy
     train_accuracy = accuracy_score(
         y_train,
         train_pred
@@ -95,22 +68,21 @@ def train_and_evaluate(
         test_pred
     )
 
+    print("\n" + "=" * 50)
+    print(name)
+    print("=" * 50)
+
     print(
-        name,
         "Train Accuracy:",
         round(train_accuracy, 4)
     )
 
     print(
-        name,
         "Test Accuracy:",
         round(test_accuracy, 4)
     )
 
-    # Confusion Matrix
-    print(
-        "\nConfusion Matrix:"
-    )
+    print("\nConfusion Matrix:")
 
     print(
         confusion_matrix(
@@ -126,27 +98,31 @@ def main():
 
     filename = "placement_predict_50k Dataset (3)(in).csv"
 
-    # Load data
-    X, y = load_data(
-        filename
-    )
+    X, y = load_data(filename)
 
-    # Split data
     X_train, X_test, y_train, y_test = split_data(
         X,
         y
     )
 
-    # Train and evaluate
-    model, scaler = train_and_evaluate(
+    train_and_evaluate(
         X_train,
         y_train,
         X_test,
         y_test,
-        "Logistic Regression"
+        "Logistic Regression - StandardScaler",
+        StandardScaler()
+    )
+
+    train_and_evaluate(
+        X_train,
+        y_train,
+        X_test,
+        y_test,
+        "Logistic Regression - MinMaxScaler",
+        MinMaxScaler()
     )
 
 
 if __name__ == "__main__":
-
     main()
