@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logistic Regression - Placement Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+    <h1>Placement Prediction Project</h1>
+</header>
+
+<div class="layout">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <ul>
+            <li>
+                <a href="{{ url_for('data_loading') }}" class="menu-item {% if active == 'data-loading' %}active{% endif %}">
+                    Data Loading
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('eda') }}" class="menu-item {% if active == 'eda' %}active{% endif %}">
+                    EDA
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('preprocessing') }}" class="menu-item {% if active == 'preprocessing' %}active{% endif %}">
+                    Preprocessing
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('linear_regression') }}" class="menu-item {% if active == 'linear-regression' %}active{% endif %}">
+                    Linear Regression
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('logistic_regression') }}" class="menu-item {% if active == 'logistic-regression' %}active{% endif %}">
+                    Logistic Regression
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('decision_trees') }}" class="menu-item {% if active == 'decision-trees' %}active{% endif %}">
+                    Decision Trees
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('placement_predictor') }}" class="menu-item {% if active == 'placement-predictor' %}active{% endif %}">
+                    Placement Predictor
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content">
+        <h2>Logistic Regression</h2>
+
+        <!-- Model / Regularization Selector Form -->
+        <div style="background-color: white; border: 1px solid #d5dbe2; border-radius: 8px; padding: 18px 24px; margin-bottom: 25px; box-shadow: 0 2px 7px rgba(0,0,0,0.06); max-width: 600px;">
+            <form method="get" action="{{ url_for('logistic_regression') }}" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                <label for="reg_type" style="font-weight: 600; color: #1f3a5f;">Regularization:</label>
+                <select name="reg_type" id="reg_type" onchange="this.form.submit()" style="padding: 9px 16px; border: 1px solid #c4d0dc; border-radius: 5px; font-size: 14px; background: #fff; color: #1f3a5f; cursor: pointer;">
+                    <option value="without_reg" {% if selected_reg == 'without_reg' %}selected{% endif %}>Without Regularization</option>
+                    <option value="lasso" {% if selected_reg == 'lasso' %}selected{% endif %}>With Regularization - LASSO (L1)</option>
+                    <option value="ridge" {% if selected_reg == 'ridge' %}selected{% endif %}>With Regularization - RIDGE (L2)</option>
+                </select>
+                <noscript><button type="submit" id="load-data-btn" style="margin: 0; padding: 9px 16px;">Apply</button></noscript>
+            </form>
+        </div>
+
+        {% if error %}
+            <div class="error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        {% if results %}
+            <!-- Model Information -->
+            <h3>Model Information</h3>
+            <table class="summary-table">
+                <tr>
+                    <td>Algorithm</td>
+                    <td>{{ results.model_name }}</td>
+                </tr>
+                {% if results.c_val is not none %}
+                <tr>
+                    <td>Regularization C</td>
+                    <td>{{ results.c_val }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td>Target Variable</td>
+                    <td>{{ results.target }} (0 = Not Placed, 1 = Placed)</td>
+                </tr>
+                <tr>
+                    <td>Feature Scaling</td>
+                    <td>StandardScaler (Z-Score Normalization)</td>
+                </tr>
+                <tr>
+                    <td>Training Samples</td>
+                    <td>{{ results.training_rows }}</td>
+                </tr>
+                <tr>
+                    <td>Testing Samples</td>
+                    <td>{{ results.testing_rows }}</td>
+                </tr>
+                <tr>
+                    <td>Intercept</td>
+                    <td>{{ "%.4f"|format(results.intercept) }}</td>
+                </tr>
+            </table>
+
+            <!-- Performance Metrics -->
+            <h3>Classification Performance</h3>
+            <table class="summary-table">
+                <tr>
+                    <td>Accuracy</td>
+                    <td>{{ "%.2f"|format(results.accuracy * 100) }}%</td>
+                </tr>
+                <tr>
+                    <td>Precision</td>
+                    <td>{{ "%.4f"|format(results.precision) }}</td>
+                </tr>
+                <tr>
+                    <td>Recall</td>
+                    <td>{{ "%.4f"|format(results.recall) }}</td>
+                </tr>
+                <tr>
+                    <td>F1 Score</td>
+                    <td>{{ "%.4f"|format(results.f1_score) }}</td>
+                </tr>
+            </table>
+
+            <!-- Confusion Matrix Breakdown -->
+            <h3>Confusion Matrix Breakdown</h3>
+            <table class="summary-table">
+                <tr>
+                    <td>True Negatives (TN)</td>
+                    <td>{{ results.tn }}</td>
+                </tr>
+                <tr>
+                    <td>False Positives (FP)</td>
+                    <td>{{ results.fp }}</td>
+                </tr>
+                <tr>
+                    <td>False Negatives (FN)</td>
+                    <td>{{ results.fn }}</td>
+                </tr>
+                <tr>
+                    <td>True Positives (TP)</td>
+                    <td>{{ results.tp }}</td>
+                </tr>
+            </table>
+
+            <!-- Feature Weights -->
+            <h3>Feature Coefficients (Weights)</h3>
+            <div class="table-wrapper" style="max-width: 600px;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Feature</th>
+                            <th>Coefficient (Weight)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in results.coefficients %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ item.feature }}</td>
+                            <td>{{ "%.4f"|format(item.weight) }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Visualization -->
+            <h3>Confusion Matrix Visualization</h3>
+            <div class="chart-card">
+                <img src="{{ url_for('static', filename=results.graph) }}" alt="{{ results.model_name }}">
+            </div>
+        {% endif %}
+    </main>
+</div>
+
+</body>
+</html>

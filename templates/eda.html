@@ -1,270 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EDA - Placement Prediction</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
-
 <body>
 
-
 <header class="topbar">
-
     <h1>Placement Prediction Project</h1>
-
 </header>
 
-
 <div class="layout">
-
-
-    <!-- ==================================================
-         SIDEBAR
-    ================================================== -->
-
+    <!-- Sidebar Navigation -->
     <nav class="sidebar">
-
         <ul>
-
             <li>
-
-                <a
-                    href="{{ url_for('data_loading') }}"
-                    class="menu-item
-                    {% if active == 'data-loading' %}
-                    active
-                    {% endif %}"
-                >
+                <a href="{{ url_for('data_loading') }}" class="menu-item {% if active == 'data-loading' %}active{% endif %}">
                     Data Loading
                 </a>
-
             </li>
-
-
             <li>
-
-                <a
-                    href="{{ url_for('eda') }}"
-                    class="menu-item
-                    {% if active == 'eda' %}
-                    active
-                    {% endif %}"
-                >
+                <a href="{{ url_for('eda') }}" class="menu-item {% if active == 'eda' %}active{% endif %}">
                     EDA
                 </a>
-
             </li>
-
-
             <li>
-
-                <a
-                    href="{{ url_for('preprocessing') }}"
-                    class="menu-item
-                    {% if active == 'preprocessing' %}
-                    active
-                    {% endif %}"
-                >
+                <a href="{{ url_for('preprocessing') }}" class="menu-item {% if active == 'preprocessing' %}active{% endif %}">
                     Preprocessing
                 </a>
-
             </li>
-
-
             <li>
-
-                <a
-                    href="{{ url_for('linear_regression') }}"
-                    class="menu-item
-                    {% if active == 'linear-regression' %}
-                    active
-                    {% endif %}"
-                >
+                <a href="{{ url_for('linear_regression') }}" class="menu-item {% if active == 'linear-regression' %}active{% endif %}">
                     Linear Regression
                 </a>
-
             </li>
-
-
             <li>
-
-                <span class="menu-item disabled">
-
-                    Model Training
-                    (coming soon)
-
-                </span>
-
+                <a href="{{ url_for('logistic_regression') }}" class="menu-item {% if active == 'logistic-regression' %}active{% endif %}">
+                    Logistic Regression
+                </a>
             </li>
-
-
             <li>
-
-                <span class="menu-item disabled">
-
-                    Prediction
-                    (coming soon)
-
-                </span>
-
+                <a href="{{ url_for('decision_trees') }}" class="menu-item {% if active == 'decision-trees' %}active{% endif %}">
+                    Decision Trees
+                </a>
             </li>
-
+            <li>
+                <a href="{{ url_for('placement_predictor') }}" class="menu-item {% if active == 'placement-predictor' %}active{% endif %}">
+                    Placement Predictor
+                </a>
+            </li>
         </ul>
-
     </nav>
 
-
-
-    <!-- ==================================================
-         MAIN CONTENT
-    ================================================== -->
-
+    <!-- Main Content -->
     <main class="content">
-
-
         <h2>Exploratory Data Analysis</h2>
-
-
-        <p>
-
-            Visual analysis of the placement prediction dataset.
-
-        </p>
-
-
+        <p>Visual analysis and distributions of the placement prediction dataset.</p>
 
         {% if error %}
-
             <div class="error">
-
                 {{ error }}
-
             </div>
-
         {% endif %}
-
-
 
         {% if results %}
-
-
-            <!-- ==================================================
-                 DATASET SUMMARY
-            ================================================== -->
-
             {% if results.summary %}
-
                 <h3>Dataset Summary</h3>
-
                 <table class="summary-table">
-
                     <tr>
-
-                        <td>
-                            Rows
-                        </td>
-
-                        <td>
-                            {{ results.summary.n_rows }}
-                        </td>
-
+                        <td>Rows</td>
+                        <td>{{ results.summary.n_rows }}</td>
                     </tr>
-
-
                     <tr>
-
-                        <td>
-                            Columns
-                        </td>
-
-                        <td>
-                            {{ results.summary.n_cols }}
-                        </td>
-
+                        <td>Columns</td>
+                        <td>{{ results.summary.n_cols }}</td>
                     </tr>
-
                 </table>
-
             {% endif %}
-
-
-
-            <!-- ==================================================
-                 EDA GRAPHS
-                 ONE GRAPH PER ROW
-            ================================================== -->
 
             {% if results.charts %}
-
                 <h3>EDA Visualizations</h3>
-
                 <div class="chart-grid">
-
-
                     {% for fname in results.charts %}
-
-
                         <div class="chart-card">
-
-
                             {% if 'heatmap' in fname.lower() %}
-
-
-                                <img
-                                    class="heatmap"
-                                    src="{{ url_for(
-                                        'static',
-                                        filename='charts/' + fname
-                                    ) }}"
-                                    alt="Correlation Heatmap"
-                                >
-
-
+                                <img class="heatmap" src="{{ url_for('static', filename='charts/' + fname) }}" alt="Correlation Heatmap">
                             {% else %}
-
-
-                                <img
-                                    src="{{ url_for(
-                                        'static',
-                                        filename='charts/' + fname
-                                    ) }}"
-                                    alt="{{ fname }}"
-                                >
-
-
+                                <img src="{{ url_for('static', filename='charts/' + fname) }}" alt="{{ fname }}">
                             {% endif %}
-
-
                         </div>
-
-
                     {% endfor %}
-
-
                 </div>
-
             {% endif %}
-
-
         {% endif %}
-
-
     </main>
-
-
 </div>
 
-
 </body>
-
 </html>

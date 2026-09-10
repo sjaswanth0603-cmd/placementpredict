@@ -1,413 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Placement Prediction Project</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
-
 <body>
 
-
-<!-- ==================================================
-     TOP BAR
-================================================== -->
-
 <header class="topbar">
-
     <h1>Placement Prediction Project</h1>
-
 </header>
 
-
-
 <div class="layout">
-
-
-    <!-- ==================================================
-         SIDEBAR
-    =================================================== -->
-
+    <!-- Sidebar Navigation -->
     <nav class="sidebar">
-
         <ul>
-
-
-            <!-- DATA LOADING -->
-
             <li>
-
-                <a
-                    href="{{ url_for('data_loading') }}"
-                    class="menu-item
-                    {% if active == 'data-loading' %}
-                    active
-                    {% endif %}"
-                >
-
+                <a href="{{ url_for('data_loading') }}" class="menu-item {% if active == 'data-loading' %}active{% endif %}">
                     Data Loading
-
                 </a>
-
             </li>
-
-
-
-            <!-- EDA -->
-
             <li>
-
-                <a
-                    href="{{ url_for('eda') }}"
-                    class="menu-item
-                    {% if active == 'eda' %}
-                    active
-                    {% endif %}"
-                >
-
+                <a href="{{ url_for('eda') }}" class="menu-item {% if active == 'eda' %}active{% endif %}">
                     EDA
-
                 </a>
-
             </li>
-
-
-
-            <!-- PREPROCESSING -->
-
             <li>
-
-                <a
-                    href="{{ url_for('preprocessing') }}"
-                    class="menu-item
-                    {% if active == 'preprocessing' %}
-                    active
-                    {% endif %}"
-                >
-
+                <a href="{{ url_for('preprocessing') }}" class="menu-item {% if active == 'preprocessing' %}active{% endif %}">
                     Preprocessing
-
                 </a>
-
             </li>
-
-
-
-            <!-- LINEAR REGRESSION -->
-
             <li>
-
-                <a
-                    href="{{ url_for('linear_regression') }}"
-                    class="menu-item
-                    {% if active == 'linear-regression' %}
-                    active
-                    {% endif %}"
-                >
-
+                <a href="{{ url_for('linear_regression') }}" class="menu-item {% if active == 'linear-regression' %}active{% endif %}">
                     Linear Regression
-
                 </a>
-
             </li>
-
-
-
-            <!-- MODEL TRAINING -->
-
             <li>
-
-                <span class="menu-item disabled">
-
-                    Model Training
-                    (coming soon)
-
-                </span>
-
+                <a href="{{ url_for('logistic_regression') }}" class="menu-item {% if active == 'logistic-regression' %}active{% endif %}">
+                    Logistic Regression
+                </a>
             </li>
-
-
-
-            <!-- PREDICTION -->
-
             <li>
-
-                <span class="menu-item disabled">
-
-                    Prediction
-                    (coming soon)
-
-                </span>
-
+                <a href="{{ url_for('decision_trees') }}" class="menu-item {% if active == 'decision-trees' %}active{% endif %}">
+                    Decision Trees
+                </a>
             </li>
-
-
+            <li>
+                <a href="{{ url_for('placement_predictor') }}" class="menu-item {% if active == 'placement-predictor' %}active{% endif %}">
+                    Placement Predictor
+                </a>
+            </li>
         </ul>
-
     </nav>
 
-
-
-    <!-- ==================================================
-         MAIN CONTENT
-    =================================================== -->
-
+    <!-- Main Content -->
     <main class="content">
-
-
-        <!-- ==================================================
-             HOME PAGE
-        =================================================== -->
-
         {% if active == 'none' %}
-
             <h2>Placement Prediction System</h2>
-
-            <p>
-
-                Select an option from the left panel
-                to get started.
-
-            </p>
-
+            <p>Select an option from the left panel to explore data loading, exploratory data analysis, preprocessing, and machine learning models.</p>
         {% endif %}
-
-
-
-        <!-- ==================================================
-             DATA LOADING
-        =================================================== -->
 
         {% if active == 'data-loading' %}
-
-
             <h2>Data Loading</h2>
 
-
-
-            <!-- ERROR -->
-
             {% if error %}
-
                 <div class="error">
-
                     {{ error }}
-
                 </div>
-
             {% endif %}
-
-
 
             {% if summary %}
-
-
-                <!-- ==================================================
-                     DATASET SUMMARY
-                ================================================== -->
-
+                <h3>Dataset Summary</h3>
                 <table class="summary-table">
-
-
                     <tr>
-
-                        <td>
-                            Rows
-                        </td>
-
-                        <td>
-                            {{ summary.n_rows }}
-                        </td>
-
+                        <td>Rows</td>
+                        <td>{{ summary.n_rows }}</td>
                     </tr>
-
-
                     <tr>
-
-                        <td>
-                            Columns
-                        </td>
-
-                        <td>
-                            {{ summary.n_cols }}
-                        </td>
-
+                        <td>Columns</td>
+                        <td>{{ summary.n_cols }}</td>
                     </tr>
-
-
                 </table>
 
-
-
-                <!-- ==================================================
-                     COLUMN INFORMATION
-                     ONLY THIS TABLE HAS A DIFFERENT CLASS
-                ================================================== -->
-
                 <h3>Column Information</h3>
-
-
                 <div class="column-info-wrapper">
-
-
                     <table class="column-info-table">
-
-
                         <thead>
-
                             <tr>
-
-                                <th>
-                                    Column
-                                </th>
-
-                                <th>
-                                    Dtype
-                                </th>
-
-                                <th>
-                                    Missing Values
-                                </th>
-
+                                <th>Column</th>
+                                <th>Dtype</th>
+                                <th>Missing Values</th>
                             </tr>
-
                         </thead>
-
-
                         <tbody>
-
-
                         {% for col in summary.columns %}
-
-
                             <tr>
-
-                                <td>
-                                    {{ col }}
-                                </td>
-
-
-                                <td>
-                                    {{ summary.dtypes[col] }}
-                                </td>
-
-
-                                <td>
-                                    {{ summary.missing_counts[col] }}
-                                </td>
-
+                                <td>{{ col }}</td>
+                                <td>{{ summary.dtypes[col] }}</td>
+                                <td>{{ summary.missing_counts[col] }}</td>
                             </tr>
-
-
                         {% endfor %}
-
-
                         </tbody>
-
-
                     </table>
-
-
                 </div>
-
-
-
-                <!-- ==================================================
-                     DATASET PREVIEW
-                     ORIGINAL TABLE CLASS - UNCHANGED
-                ================================================== -->
 
                 <h3>Dataset Preview</h3>
-
-
                 <div class="table-wrapper">
-
-
                     <table class="data-table">
-
-
                         <thead>
-
                             <tr>
-
-
                             {% for col in summary.columns %}
-
-
-                                <th>
-
-                                    {{ col }}
-
-                                </th>
-
-
+                                <th>{{ col }}</th>
                             {% endfor %}
-
-
                             </tr>
-
                         </thead>
-
-
-
                         <tbody>
-
-
                         {% for row in summary.preview %}
-
-
                             <tr>
-
-
                             {% for col in summary.columns %}
-
-
-                                <td>
-
-                                    {{ row[col] }}
-
-                                </td>
-
-
+                                <td>{{ row[col] }}</td>
                             {% endfor %}
-
-
                             </tr>
-
-
                         {% endfor %}
-
-
                         </tbody>
-
-
                     </table>
-
-
                 </div>
-
-
             {% endif %}
-
-
         {% endif %}
-
-
     </main>
-
-
 </div>
 
-
 </body>
-
 </html>
