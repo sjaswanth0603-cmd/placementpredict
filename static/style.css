@@ -271,14 +271,11 @@ body {
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: 30px;
+    max-width: 920px;
+    gap: 25px;
     margin-top: 25px;
-
-    /*
-       Important:
-       Do NOT use height, max-height or overflow:hidden
-       here because they can hide EDA graphs.
-    */
+    margin-left: auto;
+    margin-right: auto;
     overflow: visible;
 }
 
@@ -289,18 +286,18 @@ body {
 
 .chart-card {
     width: 100%;
+    max-width: 920px;
     background-color: white;
     border: 1px solid #d5dbe2;
     border-radius: 8px;
-    padding: 22px;
+    padding: 22px 26px;
     box-shadow: 0 2px 7px rgba(0, 0, 0, 0.06);
-
-    /*
-       Allows every graph to remain visible.
-    */
+    box-sizing: border-box;
+    margin: 0 auto 20px auto;
     height: auto;
     min-height: 0;
     overflow: visible;
+    text-align: center;
 }
 
 
@@ -309,31 +306,29 @@ body {
 ========================================================= */
 
 .chart-card h3 {
-    margin: 0 0 18px 0;
+    margin: 0 0 16px 0;
     color: #1f3a5f;
     font-size: 18px;
+    text-align: left;
 }
 
 
 /* =========================================================
-   EDA IMAGES
+   EDA & MODEL IMAGES - BALANCED STANDARDIZED SIZE
 ========================================================= */
 
-.chart-card img {
+.chart-card img,
+.chart-card.large img,
+.chart-card figure img,
+.chart-card .graph img,
+.chart-card .plot img,
+.chart-card .plot-container img {
     display: block;
-
-    width: 100%;
     max-width: 100%;
-
-    /*
-       Do not force a fixed height.
-       This prevents graphs from being cropped.
-    */
+    max-height: 480px;
+    width: auto;
     height: auto;
-    min-height: 0;
-
     object-fit: contain;
-
     margin: 0 auto;
 }
 
@@ -346,11 +341,7 @@ body {
     margin: 0;
     padding: 0;
     width: 100%;
-}
-
-.chart-card figure img {
-    width: 100%;
-    height: auto;
+    text-align: center;
 }
 
 
@@ -364,6 +355,7 @@ body {
     width: 100%;
     max-width: 100%;
     height: auto;
+    text-align: center;
 }
 
 
@@ -373,12 +365,9 @@ body {
 
 .chart-card.large {
     width: 100%;
+    max-width: 920px;
 }
 
-.chart-card.large img {
-    width: 100%;
-    height: auto;
-}
 
 
 /* =========================================================
@@ -387,10 +376,13 @@ body {
 
 .chart-card canvas {
     display: block;
-    width: 100% !important;
+    width: auto !important;
     max-width: 100%;
+    max-height: 420px;
     height: auto !important;
+    margin: 0 auto;
 }
+
 
 
 /* =========================================================
@@ -476,7 +468,9 @@ body {
     }
 
     .chart-card img {
-        width: 100%;
+        width: auto;
+        max-width: 100%;
+        max-height: 400px;
         height: auto;
     }
 }
@@ -523,8 +517,594 @@ body {
     }
 
     .chart-card img {
-        width: 100%;
+        width: auto;
         max-width: 100%;
+        max-height: 320px;
         height: auto;
     }
+}
+
+
+/* =========================================================
+   SELECTOR CARD
+========================================================= */
+
+.selector-card {
+    background-color: white;
+    border: 1px solid #d5dbe2;
+    border-radius: 8px;
+    padding: 16px 22px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 7px rgba(0,0,0,0.05);
+    max-width: 750px;
+}
+
+.algo-select {
+    padding: 9px 16px;
+    border: 1px solid #c4d0dc;
+    border-radius: 5px;
+    font-size: 14px;
+    background: #fff;
+    color: #1f3a5f;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   STUDENT PLACEMENT PREDICTOR CARD & CONTROLS
+========================================================= */
+
+.predictor-card {
+    background: #ffffff;
+    border: 1px solid #d5dbe2;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 30px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    max-width: 920px;
+}
+
+.predictor-header h3 {
+    margin: 0 0 6px 0;
+    color: #1f3a5f;
+    font-size: 20px;
+}
+
+.predictor-header p {
+    margin: 0 0 16px 0;
+    color: #526071;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.preset-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    background: #f8fafc;
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+.preset-btn {
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.preset-btn.success {
+    background: #e6f7ef;
+    color: #0b7a48;
+    border: 1px solid #a3e3c2;
+}
+
+.preset-btn.success:hover {
+    background: #c3eed7;
+}
+
+.preset-btn.warning {
+    background: #fef8ec;
+    color: #b46d08;
+    border: 1px solid #f9ddaa;
+}
+
+.preset-btn.warning:hover {
+    background: #fde8bc;
+}
+
+.preset-btn.danger {
+    background: #fdf2f2;
+    color: #b91c1c;
+    border: 1px solid #f8b4b4;
+}
+
+.preset-btn.danger:hover {
+    background: #fbcbcb;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.form-group input {
+    padding: 9px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #1e293b;
+    background: #fff;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.predict-submit-btn {
+    background: #1f3a5f;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 11px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.predict-submit-btn:hover {
+    background: #2b4e7e;
+}
+
+
+/* =========================================================
+   PREDICTION RESULT SHOWCASE
+========================================================= */
+
+.result-showcase {
+    margin-top: 25px;
+    padding: 22px 24px;
+    border-radius: 8px;
+    border: 1px solid;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.result-placed {
+    background: #f0fdf4;
+    border-color: #86efac;
+}
+
+.result-not-placed {
+    background: #fef2f2;
+    border-color: #fca5a5;
+}
+
+.result-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.result-badge {
+    display: inline-block;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    padding: 8px 18px;
+    border-radius: 6px;
+}
+
+.badge-placed {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.badge-not-placed {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.result-prob-box {
+    text-align: right;
+}
+
+.prob-number {
+    display: block;
+    font-size: 24px;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.prob-label {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.prob-bar-container {
+    height: 10px;
+    width: 100%;
+    background: #e2e8f0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.prob-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.4s ease;
+}
+
+.fill-placed {
+    background: linear-gradient(90deg, #34d399, #10b981);
+}
+
+.fill-not-placed {
+    background: linear-gradient(90deg, #f87171, #ef4444);
+}
+
+.summary-paragraph {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: #334155;
+    margin: 0 0 16px 0;
+}
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.insight-box {
+    background: #ffffff;
+    padding: 14px 18px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+.insight-box h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+}
+
+.insight-box.strengths h4 {
+    color: #15803d;
+}
+
+.insight-box.improvements h4 {
+    color: #b91c1c;
+}
+
+.insight-box ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   STATUS PILLS FOR SAMPLES TABLE
+========================================================= */
+
+.status-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.pill-green {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+
+.pill-red {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+
+/* =========================================================
+   MODEL COMPARISON & LEADERBOARD STYLING
+========================================================= */
+
+.winner-card {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 26px 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 24px rgba(30, 58, 138, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.winner-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.trophy-icon {
+    font-size: 48px;
+    line-height: 1;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.winner-subtitle {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #93c5fd;
+    margin-bottom: 4px;
+}
+
+.winner-title {
+    margin: 0 0 6px 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.winner-desc {
+    margin: 0;
+    font-size: 14px;
+    color: #dbeafe;
+    line-height: 1.4;
+}
+
+.winner-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 16px 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.winner-stat-box {
+    text-align: center;
+}
+
+.winner-stat-box .stat-value {
+    display: block;
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.winner-stat-box .stat-title {
+    font-size: 12px;
+    color: #bfdbfe;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rank-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.rank-gold {
+    background: #fef08a;
+    color: #854d0e;
+    border: 1px solid #facc15;
+}
+
+.rank-silver {
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+}
+
+.rank-bronze {
+    background: #fed7aa;
+    color: #9a3412;
+    border: 1px solid #fb923c;
+}
+
+.rank-default {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.family-tag {
+    display: inline-block;
+    background: #eff6ff;
+    color: #1d4ed8;
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #dbeafe;
+}
+
+.comparison-insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    margin-top: 15px;
+    margin-bottom: 30px;
+}
+
+.insight-card {
+    background: #ffffff;
+    border: 1px solid #d5dbe2;
+    border-radius: 8px;
+    padding: 18px 22px;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.04);
+}
+
+.insight-card h4 {
+    margin: 0 0 10px 0;
+    color: #1f3a5f;
+    font-size: 15px;
+}
+
+.insight-card p {
+    margin: 0;
+    color: #4b5563;
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   SALARY PACKAGE PREDICTOR STYLES
+========================================================= */
+
+.salary-card {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 18px;
+    border-left: 4px solid #2563eb;
+}
+
+.salary-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.salary-card-label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+}
+
+.salary-card-val-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.salary-main-val {
+    font-size: 26px;
+    font-weight: 800;
+    color: #1e3a8a;
+}
+
+.salary-tier-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.tier-super-dream {
+    background: #fef08a;
+    color: #854d0e;
+    border: 1px solid #facc15;
+}
+
+.tier-dream {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #7dd3fc;
+}
+
+.tier-standard {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+.salary-gauge-legend {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.salary-meter-container {
+    height: 8px;
+    width: 100%;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.salary-meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #60a5fa, #2563eb, #1d4ed8);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.salary-insight-text {
+    margin: 0;
+    font-size: 13.5px;
+    color: #334155;
+    line-height: 1.5;
+}
+
+.salary-card-unplaced {
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    border-left: 4px solid #e11d48;
 }

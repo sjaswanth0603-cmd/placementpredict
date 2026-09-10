@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Placement Predictor - Placement Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+    <h1>Placement Prediction Project</h1>
+</header>
+
+<div class="layout">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <ul>
+            <li>
+                <a href="{{ url_for('data_loading') }}" class="menu-item {% if active == 'data-loading' %}active{% endif %}">
+                    Data Loading
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('eda') }}" class="menu-item {% if active == 'eda' %}active{% endif %}">
+                    EDA
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('preprocessing') }}" class="menu-item {% if active == 'preprocessing' %}active{% endif %}">
+                    Preprocessing
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('linear_regression') }}" class="menu-item {% if active == 'linear-regression' %}active{% endif %}">
+                    Linear Regression
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('logistic_regression') }}" class="menu-item {% if active == 'logistic-regression' %}active{% endif %}">
+                    Logistic Regression
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('decision_trees') }}" class="menu-item {% if active == 'decision-trees' %}active{% endif %}">
+                    Decision Trees
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('placement_predictor') }}" class="menu-item {% if active == 'placement-predictor' %}active{% endif %}">
+                    Placement Predictor
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content">
+        <h2>Student Placement Predictor</h2>
+        <p style="color: #4a5568; margin-top: -10px; margin-bottom: 25px;">
+            Test student credentials in real-time to determine whether a student will be <strong>Placed</strong> or <strong>Not Placed</strong>, complete with confidence probability, key strengths, and personalized recommendations.
+        </p>
+
+        {% if error %}
+            <div class="error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Prediction Card -->
+        <div class="predictor-card">
+            <div class="predictor-header">
+                <h3>Check Whether a Student is Placed or Not</h3>
+                <p>Input academic scores and technical benchmarks, or select a preset profile to evaluate placement probability and projected starting package.</p>
+            </div>
+
+            <!-- Quick Preset Buttons (Clean & Professional, No Symbols) -->
+            <div class="preset-container">
+                <span style="font-size: 13px; font-weight: 600; color: #4b5563;">Quick Presets:</span>
+                <button type="button" class="preset-btn success" onclick="loadPreset('high')">High Achiever (Placed)</button>
+                <button type="button" class="preset-btn warning" onclick="loadPreset('average')">Average Profile (Borderline)</button>
+                <button type="button" class="preset-btn danger" onclick="loadPreset('low')">At-Risk Candidate (Needs Support)</button>
+            </div>
+
+            <form method="post" action="{{ url_for('placement_predictor') }}" class="predictor-form">
+                <!-- Algorithm Selector within Predictor -->
+                <div style="margin-bottom: 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    <label for="algorithm" style="font-size: 13px; font-weight: 600; color: #1f3a5f;">Prediction Engine:</label>
+                    <select name="algorithm" id="algorithm" class="algo-select" style="padding: 7px 14px; font-size: 13.5px;">
+                        <option value="bagging" {% if selected_algo == 'bagging' %}selected{% endif %}>Bagging Classifier (Ensemble of Decision Trees)</option>
+                        <option value="random_forest" {% if selected_algo == 'random_forest' %}selected{% endif %}>Random Forest Classifier</option>
+                        <option value="id3" {% if selected_algo == 'id3' %}selected{% endif %}>ID3 (Decision Tree - Entropy)</option>
+                        <option value="adaboost" {% if selected_algo == 'adaboost' %}selected{% endif %}>AdaBoost Classifier</option>
+                        <option value="xgboost" {% if selected_algo == 'xgboost' %}selected{% endif %}>XGBoost Classifier</option>
+                        <option value="lightgbm" {% if selected_algo == 'lightgbm' %}selected{% endif %}>LightGBM Classifier</option>
+                        <option value="gradient_boost" {% if selected_algo == 'gradient_boost' %}selected{% endif %}>Gradient Boosting Classifier</option>
+                    </select>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="CGPA">CGPA (0 - 10)</label>
+                        <input type="number" id="CGPA" name="CGPA" step="0.01" min="0" max="10" value="{{ student_inputs.CGPA }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="AptitudeTestScore">Aptitude Score (0 - 100)</label>
+                        <input type="number" id="AptitudeTestScore" name="AptitudeTestScore" step="0.5" min="0" max="100" value="{{ student_inputs.AptitudeTestScore }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="CodingTestScore">Coding Test Score (0 - 100)</label>
+                        <input type="number" id="CodingTestScore" name="CodingTestScore" step="0.5" min="0" max="100" value="{{ student_inputs.CodingTestScore }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="MockInterviewScore">Mock Interview Score (0 - 100)</label>
+                        <input type="number" id="MockInterviewScore" name="MockInterviewScore" step="0.5" min="0" max="100" value="{{ student_inputs.MockInterviewScore }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="SoftSkillsRating">Soft Skills Rating (1 - 5)</label>
+                        <input type="number" id="SoftSkillsRating" name="SoftSkillsRating" step="0.1" min="1" max="5" value="{{ student_inputs.SoftSkillsRating }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Internships">Internships</label>
+                        <input type="number" id="Internships" name="Internships" min="0" max="10" value="{{ student_inputs.Internships }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Projects">Projects</label>
+                        <input type="number" id="Projects" name="Projects" min="0" max="20" value="{{ student_inputs.Projects }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Certifications">Certifications</label>
+                        <input type="number" id="Certifications" name="Certifications" min="0" max="20" value="{{ student_inputs.Certifications }}" required>
+                    </div>
+                </div>
+
+                <div style="margin-top: 22px;">
+                    <button type="submit" class="predict-submit-btn">
+                        Predict Placement Status
+                    </button>
+                </div>
+            </form>
+
+            <!-- Prediction Result Showcase -->
+            {% if prediction_result %}
+                <div class="result-showcase {% if prediction_result.is_placed %}result-placed{% else %}result-not-placed{% endif %}">
+                    <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; color: #475569;">
+                        Evaluated via {{ prediction_result.algorithm_used }}
+                    </div>
+
+                    <div class="result-status-row">
+                        <div class="result-badge {% if prediction_result.is_placed %}badge-placed{% else %}badge-not-placed{% endif %}">
+                            {% if prediction_result.is_placed %}
+                                PLACED
+                            {% else %}
+                                NOT PLACED
+                            {% endif %}
+                        </div>
+                        <div class="result-prob-box">
+                            <span class="prob-number">{{ prediction_result.probability }}%</span>
+                            <span class="prob-label">Placement Probability ({{ prediction_result.confidence }})</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Probability Meter -->
+                    <div class="prob-bar-container">
+                        <div class="prob-bar-fill {% if prediction_result.is_placed %}fill-placed{% else %}fill-not-placed{% endif %}" style="width: {{ prediction_result.probability }}%;"></div>
+                    </div>
+
+                    <!-- Expected Salary Package (Regression Model Prediction) -->
+                    {% if prediction_result.is_placed and prediction_result.salary_info %}
+                        <div class="salary-card">
+                            <div class="salary-card-header">
+                                <div>
+                                    <span class="salary-card-label">PROJECTED STARTING SALARY PACKAGE (CTC)</span>
+                                    <div class="salary-card-val-row">
+                                        <span class="salary-main-val">{{ prediction_result.salary_info.formatted }}</span>
+                                        <span class="salary-tier-tag {{ prediction_result.salary_info.tier_class }}">
+                                            {{ prediction_result.salary_info.tier_badge }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="salary-gauge-legend">
+                                    <span>Dataset Scale: 3.0 LPA to 26.0 LPA</span>
+                                </div>
+                            </div>
+
+                            <!-- Visual Salary Range Meter -->
+                            <div class="salary-meter-container">
+                                <div class="salary-meter-fill" style="width: {{ prediction_result.salary_info.meter_pct }}%;"></div>
+                            </div>
+
+                            <p class="salary-insight-text">{{ prediction_result.salary_info.insight }}</p>
+                        </div>
+                    {% elif not prediction_result.is_placed %}
+                        <div class="salary-card-unplaced">
+                            <div style="font-weight: 700; color: #991b1b; font-size: 14px; margin-bottom: 4px;">
+                                Expected Salary Package: Not Applicable (Eligible Upon Placement)
+                            </div>
+                            <p style="margin: 0; font-size: 13px; color: #7f1d1d;">
+                                Salary package calculation activates once the student crosses the placement qualification threshold. Address the recommended focus areas below to unlock offers between Rs. 3 LPA and Rs. 26 LPA.
+                            </p>
+                        </div>
+                    {% endif %}
+
+                    <!-- Humanized Feedback & Insights -->
+                    <p class="summary-paragraph">{{ prediction_result.summary_text }}</p>
+
+                    <div class="insights-grid">
+                        {% if prediction_result.strengths %}
+                        <div class="insight-box strengths">
+                            <h4>Key Strengths</h4>
+                            <ul>
+                                {% for item in prediction_result.strengths %}
+                                    <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        {% if prediction_result.improvements %}
+                        <div class="insight-box improvements">
+                            <h4>Recommended Focus Areas</h4>
+                            <ul>
+                                {% for item in prediction_result.improvements %}
+                                    <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sample Test Set Predictions Table -->
+        {% if sample_students %}
+            <h3>Recent Student Test Set Predictions (Actual vs Predicted)</h3>
+            <p style="color: #4a5568; font-size: 14px; margin-top: -8px; margin-bottom: 12px;">
+                Direct verification of predictions on unseen test-set students from the 50,000-record dataset:
+            </p>
+            <div class="table-wrapper" style="max-height: 480px; margin-bottom: 30px;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>CGPA</th>
+                            <th>Aptitude Score</th>
+                            <th>Coding Score</th>
+                            <th>Mock Interview</th>
+                            <th>Actual Status</th>
+                            <th>Predicted Status</th>
+                            <th>Package (LPA)</th>
+                            <th>Probability</th>
+                            <th>Model Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for student in sample_students %}
+                        <tr>
+                            <td>#{{ student.student_id }}</td>
+                            <td>{{ "%.2f"|format(student.cgpa) }}</td>
+                            <td>{{ "%.1f"|format(student.aptitude) }}</td>
+                            <td>{{ "%.1f"|format(student.coding) }}</td>
+                            <td>{{ "%.1f"|format(student.mock_interview) }}</td>
+                            <td>
+                                <span class="status-pill {% if student.actual_status == 'Placed' %}pill-green{% else %}pill-red{% endif %}">
+                                    {{ student.actual_status }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-pill {% if student.predicted_status == 'Placed' %}pill-green{% else %}pill-red{% endif %}">
+                                    {{ student.predicted_status }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if student.salary_display and student.salary_display != '—' %}
+                                    <strong style="color: #047857;">{{ student.salary_display }}</strong>
+                                {% else %}
+                                    <span style="color: #94a3b8;">—</span>
+                                {% endif %}
+                            </td>
+                            <td><strong>{{ student.probability }}%</strong></td>
+                            <td>
+                                {% if student.is_correct %}
+                                    <span style="color: #10b981; font-weight: 600;">Correct Match</span>
+                                {% else %}
+                                    <span style="color: #ef4444; font-weight: 600;">Misclassified</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </main>
+</div>
+
+<!-- Quick Preset Population Script -->
+<script>
+function loadPreset(type) {
+    if (type === 'high') {
+        document.getElementById('CGPA').value = '8.60';
+        document.getElementById('AptitudeTestScore').value = '85';
+        document.getElementById('CodingTestScore').value = '82';
+        document.getElementById('MockInterviewScore').value = '78';
+        document.getElementById('SoftSkillsRating').value = '4.5';
+        document.getElementById('Internships').value = '2';
+        document.getElementById('Projects').value = '3';
+        document.getElementById('Certifications').value = '2';
+    } else if (type === 'average') {
+        document.getElementById('CGPA').value = '7.10';
+        document.getElementById('AptitudeTestScore').value = '65';
+        document.getElementById('CodingTestScore').value = '58';
+        document.getElementById('MockInterviewScore').value = '55';
+        document.getElementById('SoftSkillsRating').value = '3.4';
+        document.getElementById('Internships').value = '1';
+        document.getElementById('Projects').value = '2';
+        document.getElementById('Certifications').value = '1';
+    } else if (type === 'low') {
+        document.getElementById('CGPA').value = '5.40';
+        document.getElementById('AptitudeTestScore').value = '42';
+        document.getElementById('CodingTestScore').value = '35';
+        document.getElementById('MockInterviewScore').value = '36';
+        document.getElementById('SoftSkillsRating').value = '2.2';
+        document.getElementById('Internships').value = '0';
+        document.getElementById('Projects').value = '1';
+        document.getElementById('Certifications').value = '0';
+    }
+}
+</script>
+
+</body>
+</html>

@@ -1,453 +1,183 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
-
 <head>
-
-<meta charset="UTF-8">
-
-<title>Placement Prediction Project</title>
-
-<link rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preprocessing - Placement Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
-
 <body>
 
-
 <header class="topbar">
-
     <h1>Placement Prediction Project</h1>
-
 </header>
 
-
 <div class="layout">
-
-
-    <!-- =====================================================
-         SIDEBAR
-         ===================================================== -->
-
+    <!-- Sidebar Navigation -->
     <nav class="sidebar">
-
         <ul>
-
-
-            <!-- DATA LOADING -->
-
             <li>
-
-                <a href="{{ url_for('data_loading') }}"
-                   class="menu-item">
-
+                <a href="{{ url_for('data_loading') }}" class="menu-item {% if active == 'data-loading' %}active{% endif %}">
                     Data Loading
-
                 </a>
-
             </li>
-
-
-            <!-- EDA -->
-
             <li>
-
-                <a href="{{ url_for('eda') }}"
-                   class="menu-item">
-
+                <a href="{{ url_for('eda') }}" class="menu-item {% if active == 'eda' %}active{% endif %}">
                     EDA
-
                 </a>
-
             </li>
-
-
-            <!-- PREPROCESSING -->
-
             <li>
-
-                <a href="{{ url_for('preprocessing') }}"
-                   class="menu-item active">
-
+                <a href="{{ url_for('preprocessing') }}" class="menu-item {% if active == 'preprocessing' %}active{% endif %}">
                     Preprocessing
-
                 </a>
-
             </li>
-
             <li>
-
-    <a href="{{ url_for('linear_regression') }}"
-       class="menu-item
-       {% if active == 'linear-regression' %}active{% endif %}">
-
-        Linear Regression
-
-    </a>
-
-</li>
-
-            <!-- COMING SOON -->
-
-            <li class="menu-item disabled">
-
-                Model Training (coming soon)
-
+                <a href="{{ url_for('linear_regression') }}" class="menu-item {% if active == 'linear-regression' %}active{% endif %}">
+                    Linear Regression
+                </a>
             </li>
-
-
-            <li class="menu-item disabled">
-
-                Prediction (coming soon)
-
+            <li>
+                <a href="{{ url_for('logistic_regression') }}" class="menu-item {% if active == 'logistic-regression' %}active{% endif %}">
+                    Logistic Regression
+                </a>
             </li>
-
-
+            <li>
+                <a href="{{ url_for('decision_trees') }}" class="menu-item {% if active == 'decision-trees' %}active{% endif %}">
+                    Decision Trees
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('placement_predictor') }}" class="menu-item {% if active == 'placement-predictor' %}active{% endif %}">
+                    Placement Predictor
+                </a>
+            </li>
         </ul>
-
     </nav>
 
-
-    <!-- =====================================================
-         MAIN CONTENT
-         ===================================================== -->
-
+    <!-- Main Content -->
     <main class="content">
-
-
         <h2>Data Preprocessing</h2>
 
-
         {% if error %}
-
             <div class="error">
-
                 {{ error }}
-
             </div>
-
         {% endif %}
-
-
 
         {% if results %}
-
-
-            <!-- =================================================
-                 SUMMARY
-                 ================================================= -->
-
+            <!-- Summary Table -->
             <table class="summary-table">
-
-
                 <tr>
-
                     <td>Original Rows</td>
-
-                    <td>
-                        {{ results.original_rows }}
-                    </td>
-
+                    <td>{{ results.original_rows }}</td>
                 </tr>
-
-
                 <tr>
-
                     <td>Original Columns</td>
-
-                    <td>
-                        {{ results.original_columns }}
-                    </td>
-
+                    <td>{{ results.original_columns }}</td>
                 </tr>
-
-
                 <tr>
-
                     <td>Final Rows</td>
-
-                    <td>
-                        {{ results.final_rows }}
-                    </td>
-
+                    <td>{{ results.final_rows }}</td>
                 </tr>
-
-
                 <tr>
-
                     <td>Final Features</td>
-
-                    <td>
-                        {{ results.final_columns }}
-                    </td>
-
+                    <td>{{ results.final_columns }}</td>
                 </tr>
-
-
                 <tr>
-
                     <td>Missing Values Before</td>
-
-                    <td>
-                        {{ results.missing_before }}
-                    </td>
-
+                    <td>{{ results.missing_before }}</td>
                 </tr>
-
-
                 <tr>
-
                     <td>Missing Values After</td>
-
-                    <td>
-                        {{ results.missing_after }}
-                    </td>
-
+                    <td>{{ results.missing_after }}</td>
                 </tr>
-
-
                 <tr>
-
                     <td>Duplicates Before</td>
-
-                    <td>
-                        {{ results.duplicates_before }}
-                    </td>
-
+                    <td>{{ results.duplicates_before }}</td>
                 </tr>
-
-
                 <tr>
-
                     <td>Duplicates After</td>
-
-                    <td>
-                        {{ results.duplicates_after }}
-                    </td>
-
+                    <td>{{ results.duplicates_after }}</td>
                 </tr>
-
-
                 <tr>
-
                     <td>Target Column</td>
-
-                    <td>
-                        {{ results.target_column }}
-                    </td>
-
+                    <td>{{ results.target_column }}</td>
                 </tr>
-
-
             </table>
 
-
-
-            <!-- =================================================
-                 REMOVED COLUMNS
-                 ================================================= -->
-
             {% if results.removed_columns %}
-
                 <h3>Removed Columns</h3>
-
                 <ul>
-
                 {% for column in results.removed_columns %}
-
-                    <li>
-                        {{ column }}
-                    </li>
-
+                    <li>{{ column }}</li>
                 {% endfor %}
-
                 </ul>
-
             {% endif %}
 
-
-
-            <!-- =================================================
-                 NUMERIC FEATURES
-                 ================================================= -->
-
             <h3>Numeric Features</h3>
-
-
             <div class="table-wrapper">
-
                 <table class="data-table">
-
-
                     <thead>
-
                         <tr>
-
                             <th>#</th>
-
                             <th>Feature</th>
-
                         </tr>
-
                     </thead>
-
-
                     <tbody>
-
-
                     {% for column in results.numeric_features %}
-
                         <tr>
-
-                            <td>
-                                {{ loop.index }}
-                            </td>
-
-                            <td>
-                                {{ column }}
-                            </td>
-
+                            <td>{{ loop.index }}</td>
+                            <td>{{ column }}</td>
                         </tr>
-
                     {% endfor %}
-
-
                     </tbody>
-
-
                 </table>
-
             </div>
-
-
-
-            <!-- =================================================
-                 CATEGORICAL FEATURES
-                 ================================================= -->
 
             <h3>Categorical Features</h3>
-
-
             <div class="table-wrapper">
-
                 <table class="data-table">
-
-
                     <thead>
-
                         <tr>
-
                             <th>#</th>
-
                             <th>Feature</th>
-
                         </tr>
-
                     </thead>
-
-
                     <tbody>
-
-
                     {% for column in results.categorical_features %}
-
                         <tr>
-
-                            <td>
-                                {{ loop.index }}
-                            </td>
-
-                            <td>
-                                {{ column }}
-                            </td>
-
+                            <td>{{ loop.index }}</td>
+                            <td>{{ column }}</td>
                         </tr>
-
                     {% endfor %}
-
-
                     </tbody>
-
-
                 </table>
-
             </div>
-
-
-
-            <!-- =================================================
-                 PROCESSED DATA PREVIEW
-                 ================================================= -->
 
             <h3>Processed Data Preview</h3>
-
-
             <div class="table-wrapper">
-
                 <table class="data-table">
-
-
                     <thead>
-
                         <tr>
-
                         {% for column in results.columns %}
-
-                            <th>
-                                {{ column }}
-                            </th>
-
+                            <th>{{ column }}</th>
                         {% endfor %}
-
                         </tr>
-
                     </thead>
-
-
                     <tbody>
-
-
                     {% for row in results.preview %}
-
                         <tr>
-
-
                         {% for column in results.columns %}
-
-                            <td>
-
-                                {{ row[column] }}
-
-                            </td>
-
+                            <td>{{ row[column] }}</td>
                         {% endfor %}
-
-
                         </tr>
-
                     {% endfor %}
-
-
                     </tbody>
-
-
                 </table>
-
             </div>
-
-
         {% endif %}
-
-
     </main>
-
-
 </div>
 
-
 </body>
-
-</html>
+</html>
