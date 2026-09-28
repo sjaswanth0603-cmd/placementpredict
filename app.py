@@ -1,3 +1,4 @@
+print("Starting Placement Predictor... Initializing modules, please wait...")
 from flask import Flask, render_template, request
 from load_data import get_data_summary
 from placement_eda import run_eda
@@ -167,6 +168,25 @@ def decision_trees():
         results=results,
         selected_algo=algorithm,
         error=error,
+    )
+
+
+# ============================================================
+# UNSUPERVISED LEARNING (K-MEANS, PCA, HIERARCHICAL, DBSCAN)
+# ============================================================
+
+@app.route("/unsupervised-learning")
+def unsupervised_learning():
+    algorithm = request.args.get("algorithm", "kmeans").lower()
+    valid_algos = ("kmeans", "pca", "hierarchical", "dbscan", "overview")
+    if algorithm not in valid_algos:
+        algorithm = "kmeans"
+
+    return render_template(
+        "unsupervised.html",
+        active="unsupervised-learning",
+        selected_algo=algorithm,
+        error=None,
     )
 
 

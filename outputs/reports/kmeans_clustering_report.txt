@@ -1,0 +1,46 @@
+======================================================================
+                 K-MEANS CLUSTERING REPORT
+======================================================================
+
+Total Dataset Instances: 50,000
+Evaluated K Range:        2 to 10
+Optimal Cluster Count K:  2
+Optimal Silhouette Score: 0.3443
+
+----------------------------------------------------------------------
+1. K EVALUATION METRICS (INERTIA & SILHOUETTE)
+----------------------------------------------------------------------
+K     | Inertia (WCSS)     | Silhouette Score   | Status
+----------------------------------------------------------------------
+2     | 555435.87          | 0.3443             | <-- OPTIMAL (Max Silhouette)
+3     | 437590.36          | 0.2719             |
+4     | 385142.94          | 0.2460             |
+5     | 343682.15          | 0.2340             |
+6     | 325387.72          | 0.2026             |
+7     | 307950.88          | 0.1843             |
+8     | 295730.41          | 0.1622             |
+9     | 284651.16          | 0.1612             |
+10    | 275408.15          | 0.1643             |
+
+----------------------------------------------------------------------
+2. CLUSTER PLACEMENT RATES & PROFILES
+----------------------------------------------------------------------
+Cluster 0:
+  - Size:             25,242 students (50.48% of cohort)
+  - Placed Count:     24,765
+  - Not Placed Count: 477
+  - Placement Rate:   98.11%
+  - Avg CGPA:         8.47
+  - Avg Coding Score: 69.90
+  - Avg Aptitude:     77.11
+
+Cluster 1:
+  - Size:             24,758 students (49.52% of cohort)
+  - Placed Count:     8,091
+  - Not Placed Count: 16,667
+  - Placement Rate:   32.68%
+  - Avg CGPA:         6.00
+  - Avg Coding Score: 44.71
+  - Avg Aptitude:     60.62
+
+======================================================================

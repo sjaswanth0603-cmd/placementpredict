@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unsupervised Learning - Placement Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .metric-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .badge-success { background: #e8f8f5; color: #27ae60; border: 1px solid #a3e4d7; }
+        .badge-info { background: #ebf5fb; color: #2980b9; border: 1px solid #aed6f1; }
+        .badge-warning { background: #fef9e7; color: #d35400; border: 1px solid #f9e79f; }
+        .chart-box {
+            background: #ffffff;
+            border: 1px solid #d5dbe2;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 15px;
+            box-shadow: 0 2px 7px rgba(0,0,0,0.06);
+            text-align: center;
+        }
+        .chart-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+        .cluster-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 15px;
+        }
+        .cluster-card {
+            background: white;
+            border: 1px solid #d5dbe2;
+            border-radius: 8px;
+            padding: 18px 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .cluster-card h4 {
+            margin: 0 0 10px 0;
+            color: #1f3a5f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+<header class="topbar">
+    <h1>Placement Prediction Project</h1>
+</header>
+
+<div class="layout">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <ul>
+            <li>
+                <a href="{{ url_for('data_loading') }}" class="menu-item {% if active == 'data-loading' %}active{% endif %}">
+                    Data Loading
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('eda') }}" class="menu-item {% if active == 'eda' %}active{% endif %}">
+                    EDA
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('preprocessing') }}" class="menu-item {% if active == 'preprocessing' %}active{% endif %}">
+                    Preprocessing
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('linear_regression') }}" class="menu-item {% if active == 'linear-regression' %}active{% endif %}">
+                    Linear Regression
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('logistic_regression') }}" class="menu-item {% if active == 'logistic-regression' %}active{% endif %}">
+                    Logistic Regression
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('decision_trees') }}" class="menu-item {% if active == 'decision-trees' %}active{% endif %}">
+                    Decision Trees
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('unsupervised_learning') }}" class="menu-item {% if active == 'unsupervised-learning' %}active{% endif %}">
+                    Unsupervised Learning
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('placement_predictor') }}" class="menu-item {% if active == 'placement-predictor' %}active{% endif %}">
+                    Placement Predictor
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content">
+        <h2>Unsupervised Learning</h2>
+        <p style="color: #4a5568; margin-top: -10px; margin-bottom: 22px;">
+            Explore clustering structures, dimensionality reduction, and pattern discovery across student cohorts without using target labels.
+        </p>
+
+        <!-- Algorithm Selector Form -->
+        <div style="background-color: white; border: 1px solid #d5dbe2; border-radius: 8px; padding: 18px 24px; margin-bottom: 25px; box-shadow: 0 2px 7px rgba(0,0,0,0.06); max-width: 620px;">
+            <form method="get" action="{{ url_for('unsupervised_learning') }}" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                <label for="algorithm" style="font-weight: 600; color: #1f3a5f;">Select Algorithm:</label>
+                <select name="algorithm" id="algorithm" onchange="this.form.submit()" style="padding: 9px 16px; border: 1px solid #c4d0dc; border-radius: 5px; font-size: 14px; background: #fff; color: #1f3a5f; cursor: pointer;">
+                    <option value="kmeans" {% if selected_algo == 'kmeans' %}selected{% endif %}>1. K-Means Clustering (Optimal K & Silhouette)</option>
+                    <option value="pca" {% if selected_algo == 'pca' %}selected{% endif %}>2. PCA (Principal Component Analysis - 2D)</option>
+                    <option value="hierarchical" {% if selected_algo == 'hierarchical' %}selected{% endif %}>3. Hierarchical Clustering (Linkages & Dendrograms)</option>
+                    <option value="dbscan" {% if selected_algo == 'dbscan' %}selected{% endif %}>4. DBSCAN Clustering (Density & Noise Detection)</option>
+                    <option value="overview" {% if selected_algo == 'overview' %}selected{% endif %}>Executive Summary & Comparative Overview</option>
+                </select>
+                <noscript><button type="submit" id="load-data-btn" style="margin: 0; padding: 9px 16px;">Apply</button></noscript>
+            </form>
+        </div>
+
+        {% if error %}
+            <div class="error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- ============================================================== -->
+        <!-- 1. K-MEANS SECTION -->
+        <!-- ============================================================== -->
+        {% if selected_algo == 'kmeans' %}
+            <h3>K-Means Clustering Analysis</h3>
+            <p style="color: #4a5568;">
+                Evaluated cluster counts from <strong>K = 2 to 10</strong> using Inertia (WCSS) and Silhouette Scores across all 50,000 students. Optimal K was selected by maximum silhouette score.
+            </p>
+
+            <table class="summary-table">
+                <tr>
+                    <td>Total Dataset Size</td>
+                    <td>50,000 students (20 standardized numeric features)</td>
+                </tr>
+                <tr>
+                    <td>Optimal Cluster Count (K)</td>
+                    <td><strong>K = 2</strong> <span class="metric-badge badge-success">Maximum Silhouette</span></td>
+                </tr>
+                <tr>
+                    <td>Optimal Silhouette Score</td>
+                    <td><strong>0.3443</strong></td>
+                </tr>
+                <tr>
+                    <td>Optimal Inertia (WCSS)</td>
+                    <td>555,435.87</td>
+                </tr>
+            </table>
+
+            <h3 style="margin-top: 30px;">Cluster Profiles & Placement Rates</h3>
+            <div class="cluster-card-grid">
+                <div class="cluster-card" style="border-top: 4px solid #27ae60;">
+                    <h4>Cluster 0: High-Potential Cohort <span class="metric-badge badge-success">98.11% Placed</span></h4>
+                    <p><strong>Students:</strong> 25,242 (50.48% of cohort)</p>
+                    <p><strong>Placed Count:</strong> 24,765 / 25,242</p>
+                    <p><strong>Average CGPA:</strong> 8.47 / 10.0</p>
+                    <p><strong>Avg Coding Test Score:</strong> 69.90</p>
+                    <p><strong>Avg Aptitude Score:</strong> 77.11</p>
+                </div>
+                <div class="cluster-card" style="border-top: 4px solid #e74c3c;">
+                    <h4>Cluster 1: At-Risk / Upskilling Cohort <span class="metric-badge badge-warning">32.68% Placed</span></h4>
+                    <p><strong>Students:</strong> 24,758 (49.52% of cohort)</p>
+                    <p><strong>Placed Count:</strong> 8,091 / 24,758</p>
+                    <p><strong>Average CGPA:</strong> 6.00 / 10.0</p>
+                    <p><strong>Avg Coding Test Score:</strong> 44.71</p>
+                    <p><strong>Avg Aptitude Score:</strong> 60.62</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px;">Inertia & Silhouette Score Progression (K = 2 to 10)</h3>
+            <table class="summary-table">
+                <thead>
+                    <tr style="background: #edf2f7; font-weight: bold;">
+                        <th>K Clusters</th>
+                        <th>Inertia (WCSS)</th>
+                        <th>Silhouette Score</th>
+                        <th>Evaluation Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #eafaf1; font-weight: 600;">
+                        <td>K = 2</td>
+                        <td>555,435.87</td>
+                        <td>0.3443</td>
+                        <td><span class="metric-badge badge-success">Selected Optimal K</span></td>
+                    </tr>
+                    <tr><td>K = 3</td><td>437,590.36</td><td>0.2719</td><td>Sub-optimal</td></tr>
+                    <tr><td>K = 4</td><td>385,142.94</td><td>0.2460</td><td>Sub-optimal</td></tr>
+                    <tr><td>K = 5</td><td>343,682.15</td><td>0.2340</td><td>Sub-optimal</td></tr>
+                    <tr><td>K = 6</td><td>325,387.72</td><td>0.2026</td><td>Sub-optimal</td></tr>
+                    <tr><td>K = 7</td><td>307,950.88</td><td>0.1843</td><td>Sub-optimal</td></tr>
+                    <tr><td>K = 8</td><td>295,730.41</td><td>0.1622</td><td>Sub-optimal</td></tr>
+                    <tr><td>K = 9</td><td>284,651.16</td><td>0.1612</td><td>Sub-optimal</td></tr>
+                    <tr><td>K = 10</td><td>275,408.15</td><td>0.1643</td><td>Sub-optimal</td></tr>
+                </tbody>
+            </table>
+
+            <h3 style="margin-top: 30px;">K-Means Visualizations</h3>
+            <div class="chart-box">
+                <h4>Elbow Method & Silhouette Scores (Side-by-Side)</h4>
+                <img src="{{ url_for('static', filename='charts/kmeans_evaluation_metrics.png') }}" alt="K-Means Evaluation Metrics">
+            </div>
+            <div class="chart-box" style="margin-top: 20px;">
+                <h4>2D PCA Cluster Distribution with Centroids</h4>
+                <img src="{{ url_for('static', filename='charts/kmeans_clusters_pca.png') }}" alt="K-Means Clusters in PCA Space">
+            </div>
+
+        <!-- ============================================================== -->
+        <!-- 2. PCA SECTION -->
+        <!-- ============================================================== -->
+        {% elif selected_algo == 'pca' %}
+            <h3>Principal Component Analysis (PCA)</h3>
+            <p style="color: #4a5568;">
+                Reduced the 20-dimensional student feature space to 2 orthogonal components to examine placement separation and variance capture.
+            </p>
+
+            <table class="summary-table">
+                <tr>
+                    <td>Original Feature Count</td>
+                    <td>20 numeric metrics (Academic, Technical, Projects, Certifications)</td>
+                </tr>
+                <tr>
+                    <td>Principal Component 1 (PC1)</td>
+                    <td><strong>64.25%</strong> Explained Variance (Eigenvalue: 12.8498)</td>
+                </tr>
+                <tr>
+                    <td>Principal Component 2 (PC2)</td>
+                    <td><strong>11.85%</strong> Explained Variance (Eigenvalue: 2.3708)</td>
+                </tr>
+                <tr>
+                    <td>Total 2-Component Variance Explained</td>
+                    <td><strong>76.10%</strong> <span class="metric-badge badge-info">High Information Retention</span></td>
+                </tr>
+            </table>
+
+            <h3 style="margin-top: 30px;">Key Feature Loadings (Interpretability)</h3>
+            <div class="cluster-card-grid">
+                <div class="cluster-card">
+                    <h4>PC1: Academic Progression Factor</h4>
+                    <p>Captures longitudinal GPA performance across all semesters:</p>
+                    <ul style="padding-left: 20px; font-size: 14px; color: #2c3e50;">
+                        <li><strong>SGPA_Sem8:</strong> +0.2626</li>
+                        <li><strong>SGPA_Sem7:</strong> +0.2615</li>
+                        <li><strong>SGPA_Sem6:</strong> +0.2603</li>
+                        <li><strong>CGPA:</strong> +0.2540</li>
+                    </ul>
+                </div>
+                <div class="cluster-card">
+                    <h4>PC2: Technical & Practical Skill Factor</h4>
+                    <p>Captures competitive technical skills and practical experience:</p>
+                    <ul style="padding-left: 20px; font-size: 14px; color: #2c3e50;">
+                        <li><strong>CodingTestScore:</strong> +0.2703</li>
+                        <li><strong>AptitudeTestScore:</strong> +0.2622</li>
+                        <li><strong>Projects:</strong> +0.2585</li>
+                        <li><strong>Internships:</strong> +0.2462</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px;">2D PCA Projection Colored by Placement Status</h3>
+            <div class="chart-box">
+                <img src="{{ url_for('static', filename='charts/pca_2d_scatter.png') }}" alt="2D PCA Scatter Plot">
+            </div>
+
+        <!-- ============================================================== -->
+        <!-- 3. HIERARCHICAL CLUSTERING SECTION -->
+        <!-- ============================================================== -->
+        {% elif selected_algo == 'hierarchical' %}
+            <h3>Hierarchical (Agglomerative) Clustering</h3>
+            <p style="color: #4a5568;">
+                Evaluated on a representative sample of <strong>2,000 students</strong> using four classical linkage methods: Ward, Complete, Average, and Single linkage.
+            </p>
+
+            <table class="summary-table">
+                <thead>
+                    <tr style="background: #edf2f7; font-weight: bold;">
+                        <th>Linkage Method</th>
+                        <th>Cophenetic Correlation</th>
+                        <th>Silhouette Score (K=2)</th>
+                        <th>Behavioral Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #ebf5fb;">
+                        <td><strong>Average Linkage</strong></td>
+                        <td><strong>0.6403</strong> <span class="metric-badge badge-info">Highest Correlation</span></td>
+                        <td>0.2189</td>
+                        <td>Best preserves original pairwise Euclidean distances</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Complete Linkage</strong></td>
+                        <td>0.6262</td>
+                        <td>0.3283</td>
+                        <td>Compact, diameter-bounded clusters</td>
+                    </tr>
+                    <tr style="background: #eafaf1;">
+                        <td><strong>Ward Linkage</strong></td>
+                        <td>0.6085</td>
+                        <td><strong>0.3235</strong></td>
+                        <td>Minimizes within-cluster variance; cleanest boundary</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Single Linkage</strong></td>
+                        <td>0.3672</td>
+                        <td>0.2210</td>
+                        <td>Suffers from chaining effect on dense student data</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="margin-top: 30px;">Direct Comparison: Hierarchical (Ward) vs. K-Means (K=2)</h3>
+            <table class="summary-table">
+                <tr>
+                    <td>Adjusted Rand Index (ARI)</td>
+                    <td><strong>0.4800</strong> <span class="metric-badge badge-success">High Cluster Agreement</span></td>
+                </tr>
+                <tr>
+                    <td>Normalized Mutual Information (NMI)</td>
+                    <td><strong>0.4566</strong></td>
+                </tr>
+                <tr>
+                    <td>Ward Silhouette Score vs. K-Means Silhouette</td>
+                    <td>0.3235 (Ward) vs. <strong>0.3464 (K-Means)</strong></td>
+                </tr>
+                <tr>
+                    <td>Cluster 0 Placement Rate</td>
+                    <td>99.86% (Ward) vs. 97.96% (K-Means)</td>
+                </tr>
+                <tr>
+                    <td>Cluster 1 Placement Rate</td>
+                    <td>47.17% (Ward) vs. 35.10% (K-Means)</td>
+                </tr>
+            </table>
+
+            <h3 style="margin-top: 30px;">Dendrograms Across All Four Linkage Methods</h3>
+            <div class="chart-box">
+                <img src="{{ url_for('static', filename='charts/hierarchical_dendrograms_all.png') }}" alt="Hierarchical Dendrograms">
+            </div>
+
+            <h3 style="margin-top: 30px;">Silhouette Score Curve (Hierarchical Linkages vs. K-Means)</h3>
+            <div class="chart-box">
+                <img src="{{ url_for('static', filename='charts/hierarchical_vs_kmeans_silhouette.png') }}" alt="Hierarchical vs KMeans Silhouette">
+            </div>
+
+        <!-- ============================================================== -->
+        <!-- 4. DBSCAN SECTION -->
+        <!-- ============================================================== -->
+        {% elif selected_algo == 'dbscan' %}
+            <h3>DBSCAN (Density-Based Spatial Clustering of Applications with Noise)</h3>
+            <p style="color: #4a5568;">
+                Evaluated on a sample of <strong>5,000 students</strong> with <strong>min_samples = 40</strong> to identify continuous density clusters, core points, and noise/outliers.
+            </p>
+
+            <table class="summary-table">
+                <tr>
+                    <td>Sample Size / Min Samples</td>
+                    <td>N = 5,000 students | <code>min_samples = 40</code></td>
+                </tr>
+                <tr>
+                    <td>Estimated Knee Epsilon (eps)</td>
+                    <td><strong>2.855</strong> (from 40-NN K-Distance curve)</td>
+                </tr>
+                <tr>
+                    <td>Selected Optimal Epsilon (eps)</td>
+                    <td><strong>3.40</strong></td>
+                </tr>
+                <tr>
+                    <td>Total Density Clusters Discovered</td>
+                    <td>2 distinct dense clusters</td>
+                </tr>
+            </table>
+
+            <h3 style="margin-top: 30px;">Point Classification Breakdown</h3>
+            <div class="cluster-card-grid">
+                <div class="cluster-card" style="border-top: 4px solid #2980b9;">
+                    <h4>Core Points <span class="metric-badge badge-info">4,858 (97.16%)</span></h4>
+                    <p>Students situated securely in dense feature neighborhoods with at least 40 peers within eps radius.</p>
+                </div>
+                <div class="cluster-card" style="border-top: 4px solid #f39c12;">
+                    <h4>Border Points <span class="metric-badge badge-warning">99 (1.98%)</span></h4>
+                    <p>Peripheral points reachable from core clusters but with fewer than 40 immediate neighbors.</p>
+                </div>
+                <div class="cluster-card" style="border-top: 4px solid #7f8c8d;">
+                    <h4>Noise Points (Outliers) <span class="metric-badge badge-warning">43 (0.86%)</span></h4>
+                    <p>Unique student profiles isolated from standard peer distributions (label = -1).</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px;">Placement Rates (Clustered vs. Noise)</h3>
+            <table class="summary-table">
+                <tr>
+                    <td>Clustered Students Placement Rate</td>
+                    <td><strong>65.22%</strong> (3,233 / 4,957 placed)</td>
+                </tr>
+                <tr>
+                    <td>Noise / Outlier Students Placement Rate</td>
+                    <td><strong>76.74%</strong> (33 / 43 placed) <span class="metric-badge badge-success">High Technical Outliers</span></td>
+                </tr>
+                <tr>
+                    <td>Cluster 0 Placement Rate</td>
+                    <td>65.48% (3,230 / 4,933 placed)</td>
+                </tr>
+                <tr>
+                    <td>Cluster 1 Placement Rate</td>
+                    <td>12.50% (3 / 24 placed)</td>
+                </tr>
+            </table>
+
+            <h3 style="margin-top: 30px;">K-Distance Plot (40-NN Elbow Point)</h3>
+            <div class="chart-box">
+                <img src="{{ url_for('static', filename='charts/dbscan_k_distance_plot.png') }}" alt="DBSCAN K-Distance Plot">
+            </div>
+
+            <h3 style="margin-top: 30px;">DBSCAN Clusters & Noise in 2D PCA Space</h3>
+            <div class="chart-box">
+                <img src="{{ url_for('static', filename='charts/dbscan_clusters_pca.png') }}" alt="DBSCAN Clusters in PCA Space">
+            </div>
+
+        <!-- ============================================================== -->
+        <!-- 5. EXECUTIVE OVERVIEW SECTION -->
+        <!-- ============================================================== -->
+        {% else %}
+            <h3>Executive Summary & Comparative Overview</h3>
+            <p style="color: #4a5568;">
+                Comprehensive benchmark across all four unsupervised learning algorithms applied to student placement prediction.
+            </p>
+
+            <table class="summary-table">
+                <thead>
+                    <tr style="background: #edf2f7; font-weight: bold;">
+                        <th>Algorithm</th>
+                        <th>Scope / Sample</th>
+                        <th>Key Parameters</th>
+                        <th>Primary Metric / Score</th>
+                        <th>Dominant Insight</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>PCA</strong></td>
+                        <td>All 50,000</td>
+                        <td>n_components = 2</td>
+                        <td>76.10% Variance</td>
+                        <td>PC1 captures Academic GPA progression; PC2 captures Coding & Aptitude skills.</td>
+                    </tr>
+                    <tr style="background: #eafaf1;">
+                        <td><strong>K-Means</strong></td>
+                        <td>All 50,000</td>
+                        <td>K = 2, n_init = 10</td>
+                        <td>Silhouette: 0.3443</td>
+                        <td>Clean separation: High-Potential (98.1% placed) vs. At-Risk (32.7% placed).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hierarchical</strong></td>
+                        <td>2,000 Sample</td>
+                        <td>Ward, Complete, Avg, Single</td>
+                        <td>Avg Corr: 0.6403 | ARI: 0.4800</td>
+                        <td>Ward linkage mirrors K-Means structure; validates 2-cluster cohort division.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DBSCAN</strong></td>
+                        <td>5,000 Sample</td>
+                        <td>eps = 3.40, min_samples = 40</td>
+                        <td>Noise: 0.86% (43 students)</td>
+                        <td>Isolates atypical outlier students with 76.7% placement success.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="margin-top: 30px;">Quick Access to Module Visualizations</h3>
+            <div class="cluster-card-grid">
+                <div class="cluster-card">
+                    <h4>PCA 2D Projection</h4>
+                    <p>Shows overall variance separation between placed and unplaced students.</p>
+                    <a href="{{ url_for('unsupervised_learning', algorithm='pca') }}" class="menu-item active" style="text-align: center; border-radius: 4px; padding: 8px;">View PCA Module</a>
+                </div>
+                <div class="cluster-card">
+                    <h4>K-Means Clustering</h4>
+                    <p>Inspect optimal K elbow curve, silhouette scores, and cluster placement profiles.</p>
+                    <a href="{{ url_for('unsupervised_learning', algorithm='kmeans') }}" class="menu-item active" style="text-align: center; border-radius: 4px; padding: 8px;">View K-Means Module</a>
+                </div>
+                <div class="cluster-card">
+                    <h4>Hierarchical Linkages</h4>
+                    <p>Explore 4-panel dendrograms and cophenetic correlation analysis.</p>
+                    <a href="{{ url_for('unsupervised_learning', algorithm='hierarchical') }}" class="menu-item active" style="text-align: center; border-radius: 4px; padding: 8px;">View Hierarchical</a>
+                </div>
+                <div class="cluster-card">
+                    <h4>DBSCAN Density Analysis</h4>
+                    <p>View 40-NN K-distance knee plot, noise detection, and core points.</p>
+                    <a href="{{ url_for('unsupervised_learning', algorithm='dbscan') }}" class="menu-item active" style="text-align: center; border-radius: 4px; padding: 8px;">View DBSCAN</a>
+                </div>
+            </div>
+        {% endif %}
+
+    </main>
+</div>
+
+</body>
+</html>

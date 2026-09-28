@@ -47,6 +47,11 @@
                 </a>
             </li>
             <li>
+                <a href="{{ url_for('unsupervised_learning') }}" class="menu-item {% if active == 'unsupervised-learning' %}active{% endif %}">
+                    Unsupervised Learning
+                </a>
+            </li>
+            <li>
                 <a href="{{ url_for('placement_predictor') }}" class="menu-item {% if active == 'placement-predictor' %}active{% endif %}">
                     Placement Predictor
                 </a>

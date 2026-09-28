@@ -1,0 +1,30 @@
+================================================================================
+        PLACEMENT PREDICTION - UNSUPERVISED LEARNING EXECUTIVE SUMMARY
+================================================================================
+
+Pipeline Runtime: 45.22 seconds
+
+1. PRINCIPAL COMPONENT ANALYSIS (PCA)
+  - PC1 Explained Variance: 64.25% (Eigenvalue: 12.8498)
+  - PC2 Explained Variance: 11.85% (Eigenvalue: 2.3708)
+  - Total 2-Component Variance Explained: 76.10%
+  - Key Finding: PC1 captures overall GPA progression; PC2 captures technical/interview skills.
+
+2. K-MEANS CLUSTERING
+  - Optimal K: 2 (Silhouette Score: 0.3443)
+  - Cluster 0: 25,242 students | Placement Rate: 98.11% | Avg CGPA: 8.47
+  - Cluster 1: 24,758 students | Placement Rate: 32.68% | Avg CGPA: 6.00
+  - Key Finding: K-Means naturally separates high-potential students (98% placed) from at-risk students (33% placed).
+
+3. HIERARCHICAL CLUSTERING (N=2,000 Sample)
+  - Highest Cophenetic Correlation: Average (0.6403), Complete (0.6262), Ward (0.6085)
+  - Optimal Ward Cluster Count: K = 2
+  - K-Means Agreement: ARI = 0.4800, NMI = 0.4566
+
+4. DBSCAN CLUSTERING (N=5,000 Sample, min_samples=40)
+  - Estimated Knee Eps: 2.855, Selected Eps: 3.40
+  - Clustered Placement Rate: 65.22% (4,957 students)
+  - Noise Placement Rate:     76.74% (43 students)
+  - Key Finding: DBSCAN successfully isolates density-based student groupings and flags atypical student profiles as noise.
+
+================================================================================
